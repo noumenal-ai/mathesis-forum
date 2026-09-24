@@ -21,6 +21,8 @@ test("a title is the docstring's bold lead, else the declaration's own name", ()
   assert.equal(titleOf(post.doc, "encard_image_inter_le_encard_shatters"), "Pajor's inequality");
   assert.equal(titleOf(null, "HasVCDimLE.vcGrowth_le_exp"), "vcGrowth_le_exp");
   assert.equal(titleOf("A family whose members…", "Foo.bar"), "bar");
+  assert.equal(titleOf("**Assouad's lower bound.** More.", "x"), "Assouad's lower bound");
+  assert.equal(titleOf("**Wait...**", "x"), "Wait...");
 });
 
 test("a member is their photo and their Mathesis profile; anyone else their glyph and GitHub", () => {
@@ -56,6 +58,7 @@ test("a thread's GitHub body carries the post's marker", () => {
   assert.equal(MARKER_RE.exec(body)?.[1], "MTH.R-2026-6001");
   assert.ok(body.includes("(https://noumenal-ai.github.io/mathesis-bank/a/MTH.R-2026-6001/)"));
   assert.ok(!body.includes("Lineage."), "only the docstring's first paragraph");
+  assert.ok(body.startsWith("[**Dhruv Gupta**](https://noumenal-ai.github.io/mathesis-bank/u/Zetetic-Dhruv/)"), body);
 });
 
 test("a title's code renders as code on a page and flattens in plain text", async () => {
