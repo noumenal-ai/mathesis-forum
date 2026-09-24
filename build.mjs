@@ -89,9 +89,9 @@ async function loadThreads() {
     const d = await gql(
       `query($owner: String!, $name: String!, $cursor: String) {
         repository(owner: $owner, name: $name) {
-          discussions(first: 50, after: $cursor) {
+          discussions(first: 20, after: $cursor) {
             pageInfo { hasNextPage endCursor }
-            nodes { id url body comments(first: 100) { ${COMMENTS} } }
+            nodes { id url title body comments(first: 100) { ${COMMENTS} } }
           }
         }
       }`,
@@ -119,6 +119,8 @@ async function loadThreads() {
       threads.set(m[1], {
         id: n.id,
         url: n.url,
+        title: n.title,
+        body: n.body,
         comments: comments
           .filter(visible)
           .map((c) => ({ ...withAuthor(c), replies: c.replies.nodes.filter(visible).map(withAuthor) })),
@@ -130,8 +132,10 @@ async function loadThreads() {
 }
 
 /** One thread per post, opened in the announcement category — only the forum
- *  opens threads there; anyone signed in to GitHub can reply. */
-async function openMissing(posts, threads) {
+ *  opens threads there; anyone signed in to GitHub can reply. A thread's title
+ *  and opening post follow its Mathesis post: if the post's docstring changes,
+ *  the thread is edited to match. */
+async function syncThreads(posts, threads) {
   const d = await gql(
     `query($owner: String!, $name: String!) {
       repository(owner: $owner, name: $name) { id discussionCategories(first: 25) { nodes { id slug } } }
@@ -142,12 +146,26 @@ async function openMissing(posts, threads) {
   const cat = cats.find((c) => c.slug === "announcements") ?? cats.find((c) => c.slug === "general");
   if (!cat) throw new Error("forum: the repository has no announcements or general category");
   for (const p of [...posts].reverse()) {
-    if (threads.has(p.argument)) continue;
+    const title = titleText(p.title);
+    const body = threadBody(p, ctx);
+    const have = threads.get(p.argument);
+    if (have) {
+      if (have.title !== title || have.body !== body) {
+        await gql(
+          `mutation($id: ID!, $title: String!, $body: String!) {
+            updateDiscussion(input: { discussionId: $id, title: $title, body: $body }) { discussion { id } }
+          }`,
+          { id: have.id, title, body },
+        );
+        console.log(`forum: brought the thread for ${p.argument} in step with its post: ${have.url}`);
+      }
+      continue;
+    }
     const r = await gql(
       `mutation($repo: ID!, $cat: ID!, $title: String!, $body: String!) {
         createDiscussion(input: { repositoryId: $repo, categoryId: $cat, title: $title, body: $body }) { discussion { id url } }
       }`,
-      { repo: d.repository.id, cat: cat.id, title: titleText(p.title), body: threadBody(p, ctx) },
+      { repo: d.repository.id, cat: cat.id, title, body },
     );
     const t = r.createDiscussion.discussion;
     threads.set(p.argument, { id: t.id, url: t.url, comments: [] });
@@ -177,7 +195,7 @@ const posts = await loadPosts();
 let threads = new Map();
 if (env.GITHUB_TOKEN) {
   threads = await loadThreads();
-  if (env.CREATE_THREADS === "1") await openMissing(posts, threads);
+  if (env.CREATE_THREADS === "1") await syncThreads(posts, threads);
 } else {
   console.warn("forum: no GITHUB_TOKEN, so the pages carry no threads");
 }
