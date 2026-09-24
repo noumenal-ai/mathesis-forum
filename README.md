@@ -16,8 +16,9 @@ Mathesis has one page on the forum, and each Mathesis post links to it.
   client), reads every thread, and writes one page per post plus an index. Replying
   happens on GitHub, through the page's link; the page updates on the next run.
 - **The workflow** (`.github/workflows/forum.yml`) runs on every new or edited discussion
-  or comment, on every push, and hourly, so a thread and its page stay in step and new
-  Mathesis posts get their threads.
+  or comment, on every push, and hourly, so each page shows its thread as it stands and new
+  Mathesis posts get their threads. A thread is opened once and never edited (GitHub lets the
+  workflow's token open a discussion, not edit one); the page always follows the current post.
 - **Nothing third-party loads.** Pages carry no script; their policy loads styles, fonts
   and images from this origin only. A member of Mathesis appears with their photo from
   the record; anyone else with the same abstract glyph Mathesis draws for them.
