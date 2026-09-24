@@ -1,0 +1,14 @@
+{
+ "schema": "mathesis/public-unit-manifest/v4",
+ "doi": "MTH.C-2026-6021",
+ "kind": "claim",
+ "decl_name": "HiddenChannelCapacity.lz_theorem_3_1",
+ "doc": "**The two-clique quantum junction tree theorem** (Lauritzen–Zwiernik,\narXiv:2605.19453, Theorem 3.1): over the acyclic two-clique base, the base's compatibility\ndatum decides base-side reconstruction. For strictly positive consistent marginals, a\nquantum Markov completion exists iff `Tr T(R) = 1`; the completion is then unique and equals\nthe normalized logarithmic candidate `σ(R) = T(R)/Tr T(R)`. Together with\n`trC_le_one` (the trace bound) this is the full theorem.",
+ "statement": {
+  "decl_names": [
+   "HiddenChannelCapacity.lz_theorem_3_1"
+  ],
+  "pretty": "∀ {a : Type u_1} {c : Type u_2} {b : Type u_3} [inst : Fintype a] [inst_1 : DecidableEq a] [inst_2 : Nonempty a]\n  [inst_3 : Fintype c] [inst_4 : DecidableEq c] [inst_5 : Nonempty c] [inst_6 : Fintype b] [inst_7 : DecidableEq b]\n  [inst_8 : Nonempty b] {ρAC : MState (a × c)} {ρCB : MState (c × b)},\n  ρAC.m.PosDef →\n    ρCB.m.PosDef →\n      ρAC.traceLeft = ρCB.traceRight →\n        (HiddenChannelCapacity.trC ρAC ρCB = 1 ↔ ∃ ω, HiddenChannelCapacity.IsMarkovCompletion ρAC ρCB ω) ∧\n          ∀ (ω : MState (a × c × b)),\n            HiddenChannelCapacity.IsMarkovCompletion ρAC ρCB ω → ω = HiddenChannelCapacity.sigT ρAC ρCB",
+  "type_sha256": "0064e98c1438cb006192b948d08a941d20f1474184a1679a912cfc3ef0b83b76"
+ }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "mathesis-forum",
+  "private": true,
+  "type": "module",
+  "description": "The forum of Mathesis: one discussion page per verified post.",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test",
+    "build": "node build.mjs"
+  }
+}

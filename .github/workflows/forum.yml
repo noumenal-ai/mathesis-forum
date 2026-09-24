@@ -1,0 +1,52 @@
+# The forum's one job: give every Mathesis post a thread and a page, and keep
+# each page in step with its thread. It runs when anyone opens, edits or
+# deletes a discussion or a comment, on every push, and hourly to pick up posts
+# newly published on Mathesis. It renders what people write; it never runs it.
+name: forum
+
+on:
+  push:
+    branches: [main]
+  discussion:
+    types: [created, edited, deleted]
+  discussion_comment:
+    types: [created, edited, deleted]
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  discussions: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: forum
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Test
+        run: node --test
+      - name: Build the forum from Mathesis and its threads
+        run: node build.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          FORUM_REPO: ${{ github.repository }}
+          CREATE_THREADS: "1"
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4

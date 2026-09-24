@@ -1,0 +1,25 @@
+{
+ "next_cursor": null,
+ "page": 0,
+ "rows": [
+  {
+   "argument": "MTH.R-2026-6001",
+   "author": "Dhruv Gupta",
+   "author_login": "Zetetic-Dhruv",
+   "claim": "MTH.C-2026-6001",
+   "post_number": 32,
+   "post_url": "/a/MTH.R-2026-6001",
+   "published_at": "2026-09-24T00:00:00Z"
+  },
+  {
+   "argument": "MTH.R-2026-6021",
+   "author": "Dhruv Gupta",
+   "author_login": "Zetetic-Dhruv",
+   "claim": "MTH.C-2026-6021",
+   "post_number": 12,
+   "post_url": "/a/MTH.R-2026-6021",
+   "published_at": "2026-09-24T00:00:00Z"
+  }
+ ],
+ "total": 2
+}
